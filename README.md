@@ -14,9 +14,16 @@
 
 ## Building and storing container images with Azure Container Registry
 
-## Running containers in Azure Container Instances
+### Build Windows docker image with ACR
+TODO: JJ
 
 ## Using containers with WebApps
+
+### Windows docker images running on WebApps
+TODO: JJ
+
+### Deploy with DevOps
+TODO: JJ
 
 ## Creating and connecting Azure Kubernetes Service
 
