@@ -104,7 +104,8 @@ Steps
     - add Docker registry pointed to Azure Container Repository cpacr
     - container registry type cpweb
     - select dockerfile
- 6. Add new Agent job running Ubuntu and repeat same steps
+    - tags $(Build.BuildNumber)
+6. Add new Agent job running Ubuntu and repeat same steps
 
 TODO:
 * build v DevOps
