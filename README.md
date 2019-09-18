@@ -53,10 +53,31 @@ az group deployment create -g $rgWebWin `
 ```
 
 ### Deploy Azure services with Azure DevOps
-TODO: 
-* Druhe repo s arm na ACR a SQL, Web App
-* Import repository to Azure DevOps a ARM
-* Zakladni pipeline na deploy ARM
+
+Utilize your knowledge from Day2 and do following steps:
+
+1. Create new DevOps Project AcademyDay3
+2. Clone this Github repo into Azure Repos https://github.com/azurecz/azuretechacademy-hybridit-labs-day3.git and name it _academy_source
+3. Create new Release pipeline CPWEB-Services-CD
+4. Configure pipeline to deploy Azure services with ARM deployment - artifacts, Sql (-administratorLoginPassword Azure123), Web for Windows
+
+**Sample of one task**
+![DevOps task 1](media/devops-services.png)
+
+**Sample of definition for Sql deployment task**
+
+```yaml
+steps:
+- task: AzureResourceGroupDeployment@2
+  displayName: 'ARM sql deploy'
+  inputs:
+    azureSubscription: 'YOUR-SUBSCRIPTION'
+    resourceGroupName: 'cp-sql'
+    location: 'West Europe'
+    csmFile: '$(System.DefaultWorkingDirectory)/_academy_source/arm-scripts/deploy-sql.json'
+    csmParametersFile: '$(System.DefaultWorkingDirectory)/_academy_source/arm-scripts/deploy-sql.parameters.json'
+    overrideParameters: '-administratorLoginPassword Azure123'
+```
 
 ## Building and storing container images with Azure Container Registry
 
