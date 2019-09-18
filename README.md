@@ -14,7 +14,19 @@
 We will deploy sample Todo web application from https://github.com/tkubica12/dotnetcore-sqldb-tutorial
 
 ### Deploy Azure services manually
-TODO: arm script & run
+Check scripts in [arm-scripts](arm-scripts) and update parameter values.
+
+Run this script to deploy Azure Container Registry
+
+```powershell
+cd .\arm-scripts\
+az group create -l westeurope -n cp-deployment-artifacts
+az group deployment create -g cp-deployment-artifacts `
+    --template-file deploy-acr.json `
+    --parameters deploy-acr.parameters.json
+```
+
+TODO: arm script & run ACR, SQL, WebApp
 
 ### Deploy Azure services with Azure DevOps
 TODO: 
