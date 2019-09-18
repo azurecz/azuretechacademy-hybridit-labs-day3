@@ -42,7 +42,15 @@ az group deployment create -g $rgSql `
     --parameters deploy-sql.parameters.json --parameters administratorLoginPassword=Azure123
 ```
 
-TODO: arm script WebApp
+Run this script to deploy Azure WebApp for Containers with Windows Containers with sample Windows container
+
+```powershell
+$rgWebWin="cp-web-win"+$uniqueId
+az group create -l westeurope -n $rgWebWin
+az group deployment create -g $rgWebWin `
+    --template-file deploy-webwin.json `
+    --parameters deploy-webwin.parameters.json
+```
 
 ### Deploy Azure services with Azure DevOps
 TODO: 
