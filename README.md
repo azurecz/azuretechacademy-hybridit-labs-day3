@@ -11,9 +11,9 @@
 - Precreated Azure DevOps organization with full rights for purpose of this Lab, instructions in [documentation](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
 ## Prepare Azure services for application
-We will deploy sample Todo web application from https://github.com/tkubica12/dotnetcore-sqldb-tutorial
 
 ### Deploy Azure services manually
+
 Check scripts in [arm-scripts](arm-scripts) and update parameter values.
 
 ```powershell
@@ -81,10 +81,31 @@ steps:
 
 ## Building and storing container images with Azure Container Registry
 
+We will deploy sample Todo web application from https://github.com/tkubica12/dotnetcore-sqldb-tutorial
+
 ### Build with Azure Build Task (option)
 TODO: Windows, Linux
 
-### Build Windows docker image with ACR with Azure DevOps
+### Build docker image with ACR with Azure DevOps
+
+We will push Linux and Windows image into Azure Container Registry using Azure DevOps.
+
+First clone source code to Azure Repos
+
+1. Import git https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git into new Azure Repos repository
+
+Steps
+
+1. Create new Release pipeline CPWEB-CD
+2. Create DEV stage
+3. Add artefact referencing source code dotnetcore-sqldb-tutorial and name it _source
+4. Make sure Agent job running windows-2019
+5. Add Docker task command buildAndPublish
+    - add Docker registry pointed to Azure Container Repository cpacr
+    - container registry type cpweb
+    - select dockerfile
+ 6. Add new Agent job running Ubuntu and repeat same steps
+
 TODO:
 * build v DevOps
 * zmena image - upravej soubor VersionController.cs na nove cislo
