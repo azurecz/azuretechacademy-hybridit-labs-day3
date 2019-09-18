@@ -16,17 +16,33 @@ We will deploy sample Todo web application from https://github.com/tkubica12/dot
 ### Deploy Azure services manually
 Check scripts in [arm-scripts](arm-scripts) and update parameter values.
 
+```powershell
+#$uniqueId = "-" + [system.environment]::MachineName
+$uniqueId = ""
+cd .\arm-scripts\
+```
+
 Run this script to deploy Azure Container Registry
 
 ```powershell
-cd .\arm-scripts\
-az group create -l westeurope -n cp-deployment-artifacts
-az group deployment create -g cp-deployment-artifacts `
+$rgArtifacts="cp-deployment-artifacts"+$uniqueId
+az group create -l westeurope -n $rgArtifacts
+az group deployment create -g $rgArtifacts `
     --template-file deploy-acr.json `
     --parameters deploy-acr.parameters.json
 ```
 
-TODO: arm script & run ACR, SQL, WebApp
+Run this script to deploy Azure Sql database
+
+```powershell
+$rgSql="cp-sql"+$uniqueId
+az group create -l westeurope -n $rgSql
+az group deployment create -g $rgSql `
+    --template-file deploy-sql.json `
+    --parameters deploy-sql.parameters.json --parameters administratorLoginPassword=Azure123
+```
+
+TODO: arm script WebApp
 
 ### Deploy Azure services with Azure DevOps
 TODO: 
