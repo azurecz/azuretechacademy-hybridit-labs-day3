@@ -10,20 +10,39 @@
   - 10 or more B-series VM vCPUs in region West Europe
 - Precreated Azure DevOps organization with full rights for purpose of this Lab, instructions in [documentation](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
-## Container-like scenarios with VMs (shared image gallery, automated image building, VMSS rolling upgrade)
+## Prepare Azure services for application
+We will deploy sample Todo web application from https://github.com/tkubica12/dotnetcore-sqldb-tutorial
+
+### Deploy Azure services manually
+TODO: arm script & run
+
+### Deploy Azure services with Azure DevOps
+TODO: 
+* Druhe repo s arm na ACR a SQL, Web App
+* Import repository to Azure DevOps a ARM
+* Zakladni pipeline na deploy ARM
 
 ## Building and storing container images with Azure Container Registry
 
-### Build Windows docker image with ACR
-TODO: JJ
+### Build with Azure Build Task (option)
+TODO: Windows, Linux
+
+### Build Windows docker image with ACR with Azure DevOps
+TODO:
+* build v DevOps
+* zmena image - upravej soubor VersionController.cs na nove cislo
+* build v DevOps
+
+### Build Linux docker image with ACR with Azure DevOps
+TODO: rozsirit pipeline
 
 ## Using containers with WebApps
 
-### Windows docker images running on WebApps
-TODO: JJ
+### Windows docker images running on WebApps with DevOps
+TODO: do pipeline pridat deploy do webapp
 
-### Deploy with DevOps
-TODO: JJ
+### Use WebApp slots for deployment
+TODO: DevOps 2 stage - stage DEV, PROD na WebApp sloty
 
 ## Creating and connecting Azure Kubernetes Service
 
