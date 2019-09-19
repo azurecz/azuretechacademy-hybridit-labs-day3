@@ -83,9 +83,6 @@ steps:
 
 We will deploy sample Todo web application from https://github.com/tkubica12/dotnetcore-sqldb-tutorial
 
-### Build with Azure Build Task (option)
-TODO: Windows, Linux
-
 ### Build docker image with ACR with Azure DevOps
 
 We will push Linux and Windows image into Azure Container Registry using Azure DevOps.
@@ -94,7 +91,7 @@ First clone source code to Azure Repos
 
 1. Import git https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git into new Azure Repos repository
 
-Steps
+Steps to create new release pipeline
 
 1. Create new Release pipeline CPWEB-CD
 2. Create DEV stage
@@ -104,24 +101,29 @@ Steps
     - add Docker registry pointed to Azure Container Repository cpacr
     - container registry type cpweb
     - select dockerfile
-    - tags $(Build.BuildNumber)
+    - tags $(Release.DeploymentID)-windows
 6. Add new Agent job running Ubuntu and repeat same steps
+    - tags $(Release.DeploymentID)-linux
 
-TODO:
-* build v DevOps
-* zmena image - upravej soubor VersionController.cs na nove cislo
-* build v DevOps
+**Sample of definition for Docker build task**
 
-### Build Linux docker image with ACR with Azure DevOps
-TODO: rozsirit pipeline
+```yaml
+steps:
+- task: Docker@2
+  displayName: 'buildAndPush - Windows'
+  inputs:
+    containerRegistry: cpacr
+    repository: cpweb
+    Dockerfile: '$(System.DefaultWorkingDirectory)/_source/Dockerfile'
+    tags: '$(Release.DeploymentID)-windows'
+```
 
 ## Using containers with WebApps
 
 ### Windows docker images running on WebApps with DevOps
 TODO: do pipeline pridat deploy do webapp
-
-### Use WebApp slots for deployment
 TODO: DevOps 2 stage - stage DEV, PROD na WebApp sloty
+TODO: zmena kodu a novy deployment - schvaleni prehozeni stage (zmena image - upravej soubor VersionController.cs na nove cislo)
 
 ## Creating and connecting Azure Kubernetes Service
 
