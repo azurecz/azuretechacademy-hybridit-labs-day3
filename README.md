@@ -83,7 +83,7 @@ steps:
 
 We will deploy sample Todo web application from https://github.com/tkubica12/dotnetcore-sqldb-tutorial
 
-### Build docker image with ACR with Azure DevOps
+### Build docker image with Azure DevOps
 
 We will push Linux and Windows image into Azure Container Registry using Azure DevOps.
 
@@ -117,6 +117,20 @@ steps:
     Dockerfile: '$(System.DefaultWorkingDirectory)/_source/Dockerfile'
     tags: '$(Release.DeploymentID)-windows'
 ```
+
+### Build Docker image with ACR Tasks (option)
+
+You can run docker build remotely with [Azure Container Registry Tasks](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview)
+
+Run this script to build docker image for Windows and Linux
+
+```powershell
+az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Windows -t cpweb:0-windows --no-wait
+az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Linux -t cpweb:0-linux --no-wait
+```
+
+## Using containers with Azure Container Instances (optional)
+TODO: Preview ve vnet
 
 ## Using containers with WebApps
 
