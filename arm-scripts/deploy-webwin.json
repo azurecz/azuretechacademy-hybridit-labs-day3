@@ -10,11 +10,18 @@
         },
         "skuCode": {
             "type": "string"
+        },
+        "acrRegistryName": {
+            "type": "string"
+        },
+        "acrRegistryResourceGroup": {
+            "type": "string"
         }
     },
     "variables": {
         "webName": "[concat(parameters('name'), uniqueString(resourceGroup().id))]",
-        "webPlanName": "[concat(parameters('name'), '-plan', uniqueString(resourceGroup().id))]"
+        "webPlanName": "[concat(parameters('name'), '-plan', uniqueString(resourceGroup().id))]",
+        "acrId": "[resourceId(parameters('acrRegistryResourceGroup'),'Microsoft.ContainerRegistry/registries',parameters('acrRegistryName'))]"
     },
     "resources": [
         {
@@ -32,22 +39,21 @@
                     "appSettings": [
                         {
                             "name": "DOCKER_REGISTRY_SERVER_URL",
-                            "value": "https://mcr.microsoft.com"
+                            "value": "[concat('https://',reference(variables('acrId'),'2019-05-01').loginServer)]"
                         },
                         {
                             "name": "DOCKER_REGISTRY_SERVER_USERNAME",
-                            "value": ""
+                            "value": "[listCredentials(variables('acrId'),'2019-05-01').username]"
                         },
                         {
                             "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
-                            "value": ""
+                            "value": "[listCredentials(variables('acrId'),'2019-05-01').passwords[0].value]"
                         },
                         {
                             "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
                             "value": "false"
                         }
                     ],
-                    "windowsFxVersion": "DOCKER|mcr.microsoft.com/azure-app-service/samples/aspnethelloworld:latest",
                     "appCommandLine": "",
                     "alwaysOn": true
                 },

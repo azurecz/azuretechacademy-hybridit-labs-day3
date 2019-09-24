@@ -10,6 +10,12 @@
         },
         "skuCode": {
             "value": "PC2"
+        },
+        "acrRegistryName": {
+            "value": "cpacr6aznnn7mvnpci"
+        },
+        "acrRegistryResourceGroup": {
+            "value": "cp-deployment-artifacts"
         }
     }
 }

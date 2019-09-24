@@ -42,7 +42,8 @@ az group deployment create -g $rgSql `
     --parameters deploy-sql.parameters.json --parameters administratorLoginPassword=Azure123
 ```
 
-Run this script to deploy Azure WebApp for Containers with Windows Containers with sample Windows container
+Run this script to deploy Azure WebApp for Containers with Windows Containers with reference to Azure Container Registry.
+Check parameters file for correct ACR name and how ACR referenced in ARM template.
 
 ```powershell
 $rgWebWin="cp-web-win"+$uniqueId
@@ -91,9 +92,9 @@ First clone source code to Azure Repos
 
 1. Import git https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git into new Azure Repos repository
 
-Steps to create new release pipeline
+Steps to create new release pipeline for Windows deployment
 
-1. Create new Release pipeline CPWEB-CD
+1. Create new Release pipeline CPWEBWINDOWS-CD
 2. Create DEV stage
 3. Add artefact referencing source code dotnetcore-sqldb-tutorial and name it _source
 4. Make sure Agent job running windows-2019
@@ -102,7 +103,10 @@ Steps to create new release pipeline
     - container registry type cpweb
     - select dockerfile
     - tags $(Release.DeploymentID)-windows
-6. Add new Agent job running Ubuntu and repeat same steps
+
+Repeat steps for Linux deployment with Release pipeline name CPWEBLINUX-CD
+
+1. Add new Agent job running Ubuntu and repeat same steps
     - tags $(Release.DeploymentID)-linux
 
 **Sample of definition for Docker build task**
@@ -145,31 +149,26 @@ az container create -g cp-aci -n cpwebl --image cpacr.azurecr.io/cpweb:0-linux -
 
 *Note: In Preview program you can run ACI in existing Azure Virtual Network and get private IP address, check [link](https://docs.microsoft.com/en-us/azure/container-instances/container-instances-vnet)*
 
-## Using containers with WebApps
+## Using containers with Azure Web Apps for Containers
 
 ### Windows docker images running on WebApps with DevOps
 
-We will modify existing pipeline to deploy container to Azure App Service
+We will modify existing pipeline CPWEBWINDOWS-CD to deploy Windows container to Azure App Service for Containers
 
-0. Add artefact Repo with scripts
-1. Add new Powershell CLI task
-    - add powershell script
-TODO: Script upravit aby nacetl credentials z az acr credential show --name <azure-container-registry-name>
-
-2. Add new task *Azure Web App for Containers* to Windows part
+1. Add new task *Azure Web App for Containers* to Windows part
     - select Subscription and App name
-    - image name: cpacrcpacr6aznnn7mvnpci.azurecr.io/cpweb:8-windows - TODO: slozit cislo containeru
-    - Configuration settings:  TODO: ???
+    - image name: cpacr.azurecr.io/cpweb:$(Release.DeploymentID)-windows
+    - Configuration settings:  TODO: SQL connection string
 
-*Info: You can use DevOps task Azure App Service deploy but now not support deployment to WebApp for Windows containers.*
+Repeat same steps for Linux container deployment to Azure App Service for Containers.
 
-*Note: Alternatively you can use deployment from command line, check this [link](https://docs.microsoft.com/en-us/azure/app-service/containers/tutorial-custom-docker-image)*
+### Test application changes and automated deployment
 
-TODO: do pipeline pridat deploy do webapp
 TODO: DevOps 2 stage - stage DEV, PROD na WebApp sloty
 TODO: zmena kodu a novy deployment - schvaleni prehozeni stage (zmena image - upravej soubor VersionController.cs na nove cislo)
 
 ## Creating and connecting Azure Kubernetes Service
+
 Before we jump into Kubernetes discussion let's create Azure Kubernetes Service cluster. We will use simple solution (no AAD login integration, no custom networking etc.) to start with.
 
 Create resource group
