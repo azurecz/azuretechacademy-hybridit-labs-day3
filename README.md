@@ -152,6 +152,37 @@ TODO: DevOps 2 stage - stage DEV, PROD na WebApp sloty
 TODO: zmena kodu a novy deployment - schvaleni prehozeni stage (zmena image - upravej soubor VersionController.cs na nove cislo)
 
 ## Creating and connecting Azure Kubernetes Service
+Before we jump into Kubernetes discussion let's create Azure Kubernetes Service cluster. We will use simple solution (no AAD login integration, no custom networking etc.) to start with.
+
+Create resource group
+
+```powershell
+az group create -n cp-aks -l westeurope
+```
+
+Create AKS. Note for this to work you need to be Contributor on your subscription and your AAD account needs to have permissions to create service principal (if not, read next). Note that CLI creates service principal account and it might take some to replicate - if command fails initialy, try again.
+
+```powershell
+az aks create -g cp-aks -n yourname-aks -c 2 --enable-addons monitoring --generate-ssh-keys
+```
+
+If you do not have permissions to do so, try to:
+- You may use service principal account you have prepared beforehand. Make sure service principal is Contributor in your subscription. Use --client-secret and --service-principal
+- AKS needs to create additional resource group with raw resources. Default name is MC_myResourceGroup_myAKSCluster_myregion. You can configure different name, but as of this writing you cannot point AKS to group that already exists. For now your service principal need to have rights on subscription level.
+
+Next we need to download kubectl and we can use Azure CLI to do so. 
+
+```powershell
+az aks install-cli
+```
+
+Or you can download it yourself - it is single binary for Windows or Linux found [here for Windows](https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/windows/amd64/kubectl.exe) and [here for Linux](https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl).
+
+Wait for deployment to finish and then download connection information:
+
+```powershell
+az aks get-credentials -n yourname-aks -g cp-aks --admin
+```
 
 ## Kubernetes: basic theory
 
