@@ -134,10 +134,11 @@ az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git
 You can run simply docker image in [Azure Container Instances](https://docs.microsoft.com/en-us/azure/container-instances/).
 
 ```powershell
+az acr credential show --name cpacr
 $acrPassword="YOUR_ACR_PASSWORD"
 az group create -n cp-aci -l westeurope
-az container create -g cp-aci -n cpwebw --image cpacr6aznnn7mvnpci.azurecr.io/cpweb:0-windows --cpu 1 --memory 4 --registry-login-server cpacr6aznnn7mvnpci.azurecr.io --registry-username cpacr6aznnn7mvnpci --registry-password $acrPassword --ports 80 --os-type Windows --ip-address Public
-az container create -g cp-aci -n cpwebl --image cpacr6aznnn7mvnpci.azurecr.io/cpweb:0-linux --cpu 1 --memory 2 --registry-login-server cpacr6aznnn7mvnpci.azurecr.io --registry-username cpacr6aznnn7mvnpci --registry-password $acrPassword --ports 80 --os-type Linux --ip-address Public
+az container create -g cp-aci -n cpwebw --image cpacr.azurecr.io/cpweb:0-windows --cpu 1 --memory 4 --registry-login-server cpacr.azurecr.io --registry-username cpacr --registry-password $acrPassword --ports 80 --os-type Windows --ip-address Public
+az container create -g cp-aci -n cpwebl --image cpacr.azurecr.io/cpweb:0-linux --cpu 1 --memory 2 --registry-login-server cpacr.azurecr.io --registry-username cpacr --registry-password $acrPassword --ports 80 --os-type Linux --ip-address Public
 ```
 
 *Note: ACI with Windows containers supports 10.0.14393 (Windows 2016) and 10.0.17763 (Windows 2019) versions only.*
@@ -147,6 +148,23 @@ az container create -g cp-aci -n cpwebl --image cpacr6aznnn7mvnpci.azurecr.io/cp
 ## Using containers with WebApps
 
 ### Windows docker images running on WebApps with DevOps
+
+We will modify existing pipeline to deploy container to Azure App Service
+
+0. Add artefact Repo with scripts
+1. Add new Powershell CLI task
+    - add powershell script
+TODO: Script upravit aby nacetl credentials z az acr credential show --name <azure-container-registry-name>
+
+2. Add new task *Azure Web App for Containers* to Windows part
+    - select Subscription and App name
+    - image name: cpacrcpacr6aznnn7mvnpci.azurecr.io/cpweb:8-windows - TODO: slozit cislo containeru
+    - Configuration settings:  TODO: ???
+
+*Info: You can use DevOps task Azure App Service deploy but now not support deployment to WebApp for Windows containers.*
+
+*Note: Alternatively you can use deployment from command line, check this [link](https://docs.microsoft.com/en-us/azure/app-service/containers/tutorial-custom-docker-image)*
+
 TODO: do pipeline pridat deploy do webapp
 TODO: DevOps 2 stage - stage DEV, PROD na WebApp sloty
 TODO: zmena kodu a novy deployment - schvaleni prehozeni stage (zmena image - upravej soubor VersionController.cs na nove cislo)
