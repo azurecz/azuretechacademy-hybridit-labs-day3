@@ -16,6 +16,18 @@
         },
         "acrRegistryResourceGroup": {
             "value": "cp-deployment-artifacts"
+        },
+        "sqlServerName": {
+            "value": "cpsqlserversssroc7vwfvwueh2"
+        },
+        "sqlServerResourceGroup": {
+            "value": "cp-sql"
+        },
+        "sqlServerPassword": {
+            "value": null
+        },
+        "dbName": {
+            "value": "Todo"
         }
     }
 }

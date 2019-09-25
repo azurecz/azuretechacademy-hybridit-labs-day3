@@ -42,15 +42,15 @@ az group deployment create -g $rgSql `
     --parameters deploy-sql.parameters.json --parameters administratorLoginPassword=Azure123
 ```
 
-Run this script to deploy Azure WebApp for Containers with Windows Containers with reference to Azure Container Registry.
-Check parameters file for correct ACR name and how ACR referenced in ARM template.
+Run this script to deploy Azure WebApp for Containers with Windows Containers with reference to Azure Container Registry and Azure Sql.
+Check parameters file for correct ACR name and Sql name/password.
 
 ```powershell
 $rgWebWin="cp-web-win"+$uniqueId
 az group create -l westeurope -n $rgWebWin
 az group deployment create -g $rgWebWin `
     --template-file deploy-webwin.json `
-    --parameters deploy-webwin.parameters.json
+    --parameters deploy-webwin.parameters.json --parameters sqlServerPassword=Azure123
 ```
 
 ### Deploy Azure services with Azure DevOps

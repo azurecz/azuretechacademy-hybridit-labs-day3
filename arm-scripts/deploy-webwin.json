@@ -16,12 +16,25 @@
         },
         "acrRegistryResourceGroup": {
             "type": "string"
+        },
+        "sqlServerName": {
+            "type": "string"
+        },
+        "sqlServerResourceGroup": {
+            "type": "string"
+        },
+        "sqlServerPassword": {
+            "type": "securestring"
+        },
+        "dbName": {
+            "type": "string"
         }
     },
     "variables": {
         "webName": "[concat(parameters('name'), uniqueString(resourceGroup().id))]",
         "webPlanName": "[concat(parameters('name'), '-plan', uniqueString(resourceGroup().id))]",
-        "acrId": "[resourceId(parameters('acrRegistryResourceGroup'),'Microsoft.ContainerRegistry/registries',parameters('acrRegistryName'))]"
+        "acrId": "[resourceId(parameters('acrRegistryResourceGroup'),'Microsoft.ContainerRegistry/registries',parameters('acrRegistryName'))]",
+        "sqlId": "[resourceId(parameters('sqlServerResourceGroup'),'Microsoft.Sql/servers',parameters('sqlServerName'))]"
     },
     "resources": [
         {
@@ -52,6 +65,13 @@
                         {
                             "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
                             "value": "false"
+                        }
+                    ],
+                    "connectionStrings": [
+                        {
+                            "name": "mojeDB",
+                            "connectionString": "[concat('Server=tcp:',reference(variables('sqlId'),'2015-05-01-preview').fullyQualifiedDomainName,',1433;Initial Catalog=',parameters('dbName'),';Persist Security Info=False;User ID=',reference(variables('sqlId'),'2015-05-01-preview').administratorLogin,';Password=',parameters('sqlServerPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]",
+                            "type": "SQLAzure"
                         }
                     ],
                     "appCommandLine": "",
