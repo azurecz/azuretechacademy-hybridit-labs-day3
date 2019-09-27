@@ -1,0 +1,109 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "skuCode": {
+            "type": "string"
+        },
+        "acrRegistryName": {
+            "type": "string"
+        },
+        "acrRegistryResourceGroup": {
+            "type": "string"
+        },
+        "sqlServerName": {
+            "type": "string"
+        },
+        "sqlServerResourceGroup": {
+            "type": "string"
+        },
+        "sqlServerPassword": {
+            "type": "securestring"
+        },
+        "dbName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "webName": "[concat(parameters('name'), uniqueString(resourceGroup().id))]",
+        "webPlanName": "[concat(parameters('name'), '-plan', uniqueString(resourceGroup().id))]",
+        "acrId": "[resourceId(parameters('acrRegistryResourceGroup'),'Microsoft.ContainerRegistry/registries',parameters('acrRegistryName'))]",
+        "sqlId": "[resourceId(parameters('sqlServerResourceGroup'),'Microsoft.Sql/servers',parameters('sqlServerName'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[variables('webName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', variables('webPlanName'))]"
+            ],
+            "properties": {
+                "name": "[variables('webName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "DOCKER_REGISTRY_SERVER_URL",
+                            "value": "[concat('https://',reference(variables('acrId'),'2019-05-01').loginServer)]"
+                        },
+                        {
+                            "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+                            "value": "[listCredentials(variables('acrId'),'2019-05-01').username]"
+                        },
+                        {
+                            "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+                            "value": "[listCredentials(variables('acrId'),'2019-05-01').passwords[0].value]"
+                        },
+                        {
+                            "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+                            "value": "false"
+                        }
+                    ],
+                    "connectionStrings": [
+                        {
+                            "name": "mojeDB",
+                            "connectionString": "[concat('Server=tcp:',reference(variables('sqlId'),'2015-05-01-preview').fullyQualifiedDomainName,',1433;Initial Catalog=',parameters('dbName'),';Persist Security Info=False;User ID=',reference(variables('sqlId'),'2015-05-01-preview').administratorLogin,';Password=',parameters('sqlServerPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]",
+                            "type": "SQLAzure"
+                        }
+                    ],
+                    "linuxFxVersion": "[concat('DOCKER|nginx',reference(variables('acrId'),'2019-05-01').loginServer,'/image')]",
+                    "appCommandLine": "",
+                    "alwaysOn": true
+                },
+                "serverFarmId": "[concat('/subscriptions/', subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('webPlanName'))]",
+                "hostingEnvironment": "",
+                "reserved": true,
+                "clientAffinityEnabled": false
+            }
+        },
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[variables('webPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "kind": "linux",
+            "tags": {},
+            "dependsOn": [],
+            "properties": {
+                "name": "[variables('webPlanName')]",
+                "workerSize": 0,
+                "workerSizeId": 0,
+                "reserved": true,
+                "numberOfWorkers": 1,
+                "hostingEnvironment": ""
+            },
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            }
+        }
+    ]
+}

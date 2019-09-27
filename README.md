@@ -53,6 +53,16 @@ az group deployment create -g $rgWebWin `
     --parameters deploy-webwin.parameters.json --parameters sqlServerPassword=Azure123
 ```
 
+Run for WebApp for Containers with Linux Containers
+
+```powershell
+$rgWebLinux="cp-web-linux"+$uniqueId
+az group create -l westeurope -n $rgWebLinux
+az group deployment create -g $rgWebLinux `
+    --template-file deploy-weblinux.json `
+    --parameters deploy-weblinux.parameters.json --parameters sqlServerPassword=Azure123
+```
+
 ### Deploy Azure services with Azure DevOps
 
 Utilize your knowledge from Day2 and do following steps:
@@ -129,7 +139,7 @@ You can run docker build remotely with [Azure Container Registry Tasks](https://
 Run this script to build docker image for Windows and Linux
 
 ```powershell
-az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Windows -t cpweb:0-windows --no-wait
+az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Windows -t cpweb:0-windows --build-arg BASE_IMAGE=mcr.microsoft.com/dotnet/core/aspnet:2.1-nanoserver-1809 --no-wait
 az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Linux -t cpweb:0-linux --no-wait
 ```
 
@@ -158,14 +168,12 @@ We will modify existing pipeline CPWEBWINDOWS-CD to deploy Windows container to 
 1. Add new task *Azure Web App for Containers* to Windows part
     - select Subscription and App name
     - image name: cpacr.azurecr.io/cpweb:$(Release.DeploymentID)-windows
-    - Configuration settings:  TODO: SQL connection string
 
 Repeat same steps for Linux container deployment to Azure App Service for Containers.
 
 ### Test application changes and automated deployment
 
-TODO: DevOps 2 stage - stage DEV, PROD na WebApp sloty
-TODO: zmena kodu a novy deployment - schvaleni prehozeni stage (zmena image - upravej soubor VersionController.cs na nove cislo)
+Now you can test to change source code and deploy it.
 
 ## Creating and connecting Azure Kubernetes Service
 
