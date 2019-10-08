@@ -5,9 +5,7 @@ metadata:
 spec:
   containers:
     - name: ubuntu
-      image: tutum/curl
-      command: ["tail"]
-      args: ["-f", "/dev/null"]
+      image: tkubica/mybox
       resources:
         requests:
           cpu: 10m
