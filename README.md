@@ -210,12 +210,158 @@ az aks get-credentials -n yourname-aks -g cp-aks --admin
 ```
 
 ## Kubernetes: basic theory
+As we wait for AKS to get created let's discuss how Kubernetes work and what are main objects we will use today. Follow instructor and you can download presentation [here](https://github.com/tkubica12/kubernetes-demo/blob/master/PPT-CZ/Kubernetes%20-%20jak%20funguje.pptx?raw=true)
 
-## Kubernetes: Pods and Deployments
+## Kubernetes: Pods
+Kubernetes files are stored in kubernetes folder.
 
-## Kubernetes: Monitoring and logging
+Deploy Pod
+
+```powershell
+kubectl apply -f podApp.yaml
+```
+
+We can list running Pods. With -w we can stream changes od Pod status so you might see status changing from ContainerCreating to Running etc.
+
+```powershell
+kubectl get pods -w
+```
+
+If something goes wrong check more details about Pod including log of state changes.
+
+```powershell
+kubectl describe pod todo
+```
+
+Note that you can also get logs via kubectl (use -f for streaming).
+
+```powershell
+kubectl logs todo
+```
+
+Pod is not exposed to outside of our cluster (we will do that later), but we can use kubectl to create encrypted tunnel for troubleshooting. Create port-forwarding and open browser on http://localhost:54321/api/version
+
+```powershell
+kubectl port-forward pod/todo 54321:80
+```
+
+Pod is basic unit of deployment and by itself it does not provide additional functionality such as redeploying Pod if something goes wrong (such as node going down). We can see that by deleting Pod. It will just die and no other Pod will be deployed as replacement.
+
+```powershell
+kubectl delete pod todo
+kubectl get pods -w
+```
+
+## Kubernetes: Deployments
+Rather that using Pod directly let's create Deployment object. Controller than creates ReplicaSet and making sure that desired number of Pods is always running. There are few more configurations we have added as best practice that we are going to need later in lab:
+
+```powershell
+kubectl apply -f deploymentApp1replica.yaml
+kubectl get deploy,rs,pods
+```
+
+We will now kill our Pod and see how Kubernetes will make sure our environment is consistent with desired state (which means create Pod again). 
+
+```powershell
+kubectl delete pod todo-54bb8c6b7c-p9n6v    # replace with your Pod name
+kubectl get pods
+```
+
+Scale our deployment to 3 replicas.
+
+```powershell
+kubectl apply -f deploymentApp3replicas.yaml
+kubectl get deploy,rs,pods
+kubectl get pods -o wide
+```
+
+Now let's play a little bit with labels. There are few ways how you can print it on output or filter by label. Try it out.
+
+```powershell
+# print all labels
+kubectl get pods --show-labels    
+
+# filter by label
+kubectl get pods -l app=todo
+
+# add label column
+kubectl get pods -L app
+```
+
+Note kthat the way how ReplicaSet (created by Deployment) is checking whether environment comply with desired state is by looking at labels. Look for Selector in output.
+
+```powershell
+kubectl get rs
+kubectl describe rs todo-54bb8c6b7c   # put your actual rs name here
+```
+
+Suppose now that one of your Pods behaves strangely. You want to get it out, but not kill it, so you can do some more troubleshooting. We can edit Pod and change its label app: todo to something else such as app: todoisolated. What you expect to happen?
+
+```powershell
+kubectl edit pod todo-54bb8c6b7c-xr98s    # change to your Pod name
+kubectl get pods --show-labels
+```
+
+What happened? As we have changed label ReplicaSet controller no longer see 3 instances with desired labels, just 2. Therefore it created one additional instance. What will happen if you change label back to its original value?
+
+```powershell
+kubectl edit pod todo-54bb8c6b7c-xr98s    # change to your Pod name
+kubectl get pods --show-labels
+```
+
+Kubernetes have killed one of your Pods. Now we have 4 instances, but desired state is 3, so controller removed one of those.
 
 ## Kubernetes: exposing apps with Services
+Kubernetes includes internal load balancer and service discovery called Service. This creates internal virtual IP address (cluster IP), load balancing rules are DNS records in internal DNS service. In order to get access to Service from outside AKS has implemented driver for type: LoadBalancer which calls Azure and deploy rules to Azure Load Balancer. By default it will create externally accessible public IP, but can be also configured for internal LB (for apps that should be accessible only within VNET or via VPN).
+
+Let's create one. Note "selector". That is way how Service identifies Pods to send traffic to. We have intentionaly included labels app and component, but not type (you will see why later in lab).
+
+```powershell
+kubectl apply -f serviceApp.yaml
+kubectl get service
+```
+
+Note that external IP can be in pending state for some time until Azure configures everything.
+
+While we wait we will test service internally. Create Pod with Ubuntu, connect to it and test internal DNS name and connectivity.
+
+```powershell
+kubectl apply -f podUbuntu.yaml
+```
+
+For troubleshooting you can exec into container and run some commands there or even jump using interactive mode to shell. Note this is just for troubleshooting - you should never change anything inside running containers this way. Always build new container image or modify external configuration (we will come to this later) rather than doing things inside.
+
+Jump into container and try access to service using DNS record.
+
+```powershell
+kubectl exec -ti ubuntu -- /bin/bash
+curl todo-app/api/version
+```
+
+Azure Stack has by now allocated public IP to deployed Service. You can get it via kubectl get services. When using scripts we can use jsonpath for direct parsing.
+
+```powershell
+$extPublicIP = $(kubectl get service todo-app -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+Invoke-RestMethod $extPublicIP/api/version -DisableKeepAlive
+```
+
+## Kubernetes: Application rolling upgrade
+Kubernetes Deployment support rolling upgrade to newer container images. If you change image in desired state (typically you change tag to roll to new version of your app). Deployment will create new ReplicaSet with new version and orchestrate rolling upgrade. It will add new version Pod and when it is fully up it removes one with older version and so until original ReplicaSet is on size 0. Since tags we used for Service identification are the same for both we will not experience any downtime.
+
+In one window start curl in loop.
+
+```powershell
+$url = "$(kubectl get service todo-app -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api/version"
+while($true) {Invoke-RestMethod $url -DisableKeepAlive}
+```
+
+Focus on version which is on end of string. No in different window deploy new version of Deploment with different image tag and see what is going on.
+
+```powershell
+kubectl apply -f deploymentAppV2.yaml
+```
+
+## Kubernetes: Monitoring and logging
 
 ## Kubernetes: using ConfigMaps and Secrets
 
