@@ -364,10 +364,21 @@ kubectl apply -f deploymentAppV2.yaml
 ## Kubernetes: Monitoring and logging
 
 ## Kubernetes: using ConfigMaps and Secrets
+TODO: move ASPNETCORE_ENVIRONMENT to ConfigMap
+TODO: use Secret to push SQL credentials
 
 ## Kubernetes: packaging deployments with Helm
+TODO: create Helm chart with ConfigMap, Deployment and Service
+
+## Kubernetes: pushing application from Azure DevOps
+TODO: Namespaces
+TODO: Dev and Prod environments
+TODO: Push v1 to both environments
+TODO: Push v2 to Dev environment only
 
 ## Kubernetes: exposing apps with Ingress
+TODO: deploy Ingress controller and add DNS record
+TODO: expose via Ingress
 
 ## Advanced Kubernetes (optional section for attendies using Kubernetes already)
 
