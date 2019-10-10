@@ -1,0 +1,7 @@
+appimage:
+  name: cpacrbn7n3upudvjcq.azurecr.io/cpweb
+  tag: 5-linux
+
+aspnetenvironment: Development
+
+SQLConnectionString: "Server=tcp:cpsqlserversssxff6cpwyypdyu.database.windows.net,1433;Initial Catalog=Todo;Persist Security Info=False;User ID=cpadmin;Password=Azure12345678};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"

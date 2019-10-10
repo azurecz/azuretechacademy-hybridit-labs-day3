@@ -444,6 +444,20 @@ helm init --service-account tiller
 helm version
 ```
 
+Study Helm chart. Templates folder includes all yaml templates and we have created very simple modifications to pass key arguments during deployment. Non-sensitive parameters can be stored in values file, but for secret (connection string) we will pass it during deploment directly.
+
+First delete all existing objects and deploy complete solution via Helm. Note when running in PowerShell to properly escape all special characters you need to wrap connection string in both " and '
+
+```powershell
+kubectl delete deploy,pod,service,configmap,secret --all
+cd ..\app-helm
+helm install -n todo `
+    -f values-dev.yaml `
+    --set "'SQLConnectionString=copyConnectStringFromGui-setCredentials'" .
+```
+
+Check our application is up and running.
+
 ## Kubernetes: pushing application from Azure DevOps
 TODO: Namespaces
 TODO: Dev and Prod environments

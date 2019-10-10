@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-config
+data:
+  aspenv: "{{.Values.aspnetenvironment}}"
+  config.ini: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+    how.nice.to.look=fairlyNice

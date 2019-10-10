@@ -1,0 +1,4 @@
+apiVersion: v1
+name: ToDoApp
+version: 1.0.0
+description: Our ToDo application
