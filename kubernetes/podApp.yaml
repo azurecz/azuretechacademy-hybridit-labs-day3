@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
     - name: todo
-      image: tkubica/dotnetcoresqldb:1
+      image: cpacrbn7n3upudvjcq.azurecr.io/5-linux
       ports:
         - containerPort: 80
       env:
