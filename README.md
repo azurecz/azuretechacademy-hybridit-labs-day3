@@ -371,7 +371,7 @@ $url = "$(kubectl get service todo-app -o jsonpath='{.status.loadBalancer.ingres
 while($true) {Invoke-RestMethod $url -DisableKeepAlive}
 ```
 
-Focus on version which is on end of string. No in different window deploy new version of Deploment with different image tag and see what is going on. First modify depoymenAppV2.yaml image: to reflect your container repository and tag for Linux version of our application.
+First modify depoymenAppV2.yaml image: to reflect your container repository and tag for Linux version of our application, but this time use different tag with different version of your application.
 
 
 ```powershell
