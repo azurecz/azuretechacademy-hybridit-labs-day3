@@ -446,14 +446,17 @@ helm version
 
 Study Helm chart. Templates folder includes all yaml templates and we have created very simple modifications to pass key arguments during deployment. Non-sensitive parameters can be stored in values file, but for secret (connection string) we will pass it during deploment directly.
 
-First delete all existing objects and deploy complete solution via Helm. Note when running in PowerShell to properly escape all special characters you need to wrap connection string in both " and '
+First delete all existing objects and deploy complete solution via Helm. Secrets are base64 encoded. We could have encode via Helm, but to avoid interpretaion hell (Helm is parsing, Shell is parsing), we will provide already base64 encoded connection string.
 
 ```powershell
 kubectl delete deploy,pod,service,configmap,secret --all
 cd ..\app-helm
+$connectionString = "ConnectStringFromGui-setCredentials"
+$Bytes = [System.Text.Encoding]::Unicode.GetBytes($connectionString)
+$EncodedText =[Convert]::ToBase64String($Bytes)
 helm install -n todo `
     -f values-dev.yaml `
-    --set "'SQLConnectionString=copyConnectStringFromGui-setCredentials'" .
+    --set "SQLConnectionString=$EncodedText" .
 ```
 
 Check our application is up and running.
