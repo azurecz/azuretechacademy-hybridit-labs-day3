@@ -421,7 +421,28 @@ kubectl apply -f deploymentAppSecrets.yaml
 Check your application now works and you can write todos to database.
 
 ## Kubernetes: packaging deployments with Helm
-TODO: create Helm chart with ConfigMap, Deployment and Service
+We now have quite a few components that need to be deployed in order for application to work - Service, Deployment, Configmap and Secret. Consider how more complex it is when you will have multiple services and other objects such as Volumes, Ingress or even more complex objects such as service mesh, network policy and others. It would be nice to package this all into single deployment unit.
+
+Also there is another problem - we had to modify YAML files to reflect our image. When we create new version, we need to modify it again. It would be better to have some templating language so we do not have to change YAMLs all the time and rather specify some attributes as variables or even create complex YAML structures on the fly.
+
+Both can be satisfied with Helm - deployment and packaging solution for Kubernetes.
+
+First download Helm. It is single binary, so for windows you can download exe file [here](https://get.helm.sh/helm-v2.14.3-windows-amd64.zip) and copy to some folder that is in your PATH.
+
+Note: for this lab we will use Helm 2 that requires cluster-side components. There is Helm 3 available in beta that has enhanced architecture in a way that cluster-side components are not neccessary. As it comes to final release, consider migrating to Helm 3.
+
+Next we need to create service account in Kubernetes that cluster-side Helm component will use to deploy resources.
+
+```bash
+kubectl apply -f tiller-rbac.yaml
+```
+
+Let's now initialize Helm so it will install cluster-side component. After a minute check Helm version and you should get response from both Client and Server.
+
+```bash
+helm init --service-account tiller
+helm version
+```
 
 ## Kubernetes: pushing application from Azure DevOps
 TODO: Namespaces
