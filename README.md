@@ -404,7 +404,21 @@ kubectl exec todo-c48749d7f-b9t56 -- ls /myconfigs
 kubectl exec todo-c48749d7f-b9t56 -- cat /myconfigs/config.ini
 ```
 
-TODO: use Secret to push SQL credentials
+Next task is to connect our application to SQL. App is designed to read connection string from environmental variable SQLCONNSTR_mojeDB. Again we do not want to store such sensitive information in deployment YAML file, nor ConfigMap. To enable proper management of secrets we will use Secret object in Kubernetes and fill env from it.
+
+First let's create secret with SQL connection string. For now we will do that from command line, not from YAML file as we do not want to store any secrets in our repo. Modify this command with your connection string.
+
+```bash
+kubectl create secret generic db --from-literal=connectionString="copyConnectStringFromGui-setCredentials"
+```
+
+Modify deploymentAppSecrets.yaml to include your image and study how ENV is filled from Secret. Deploy.
+
+```bash
+kubectl apply -f deploymentAppSecrets.yaml
+```
+
+Check your application now works and you can write todos to database.
 
 ## Kubernetes: packaging deployments with Helm
 TODO: create Helm chart with ConfigMap, Deployment and Service
