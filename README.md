@@ -381,7 +381,29 @@ kubectl apply -f deploymentAppV2.yaml
 ## Kubernetes: Monitoring and logging
 
 ## Kubernetes: using ConfigMaps and Secrets
-TODO: move ASPNETCORE_ENVIRONMENT to ConfigMap
+ASP .NET Core can be se to Development mode (when app crashes it writes details to web), which can be useful for Dev environment. But in Production we should not reveal such messages. This is set via ASPNETCORE_ENVIRONMENT variable. Currently we have this setting directly in our Deployment YAML file which means we need to change this file between dev and production environment, which is not good idea. YAML should stay and we should maintain configuration in separate object - ConfigMap. That can be used as source for ENV variables, but also can inject complete configuration files into container file system. When container needs some file such as config.ini we do not want to package it during container build, because then we need different image for dev and production. In order for image to stay the same, we can use ConfigMaps to inject that file when deploying container and do not modify image itself.
+
+In our lab we will use ConfigMap just as source for ENV ASPNETCORE_ENVIRONMENT, nevertheless for demonstration our webConfigMap.yaml also contains example of complete configuration file (we will demonstrate injecting it, but is not used by our app).
+
+Deploy ConfigMap.
+
+```bash
+kubectl apply -f webConfigMap.yaml
+```
+
+Look into deploymentAppConfigs.yaml and modify image to reflect your repository and tag. Check how we are filling ASPNETCORE_ENVIRONMENT and also using Volume to inject configuration file to /myconfigs path in container.
+
+Deploy deploymentAppConfigs.yaml. Check application is still running, ENV has been populated and files injected.
+
+```bash
+kubectl apply -f deploymentAppConfigs.yaml
+
+# In following commands replace pod name to reflect yours
+kubectl exec todo-c48749d7f-b9t56 -- env
+kubectl exec todo-c48749d7f-b9t56 -- ls /myconfigs
+kubectl exec todo-c48749d7f-b9t56 -- cat /myconfigs/config.ini
+```
+
 TODO: use Secret to push SQL credentials
 
 ## Kubernetes: packaging deployments with Helm
