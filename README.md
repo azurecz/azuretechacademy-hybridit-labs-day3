@@ -209,11 +209,22 @@ Wait for deployment to finish and then download connection information:
 az aks get-credentials -n yourname-aks -g cp-aks --admin
 ```
 
+There is one more thing we need to do. We need to give AKS access to our container repository in cp-deployment-artifacts resource group. We will add Service Principal used for AKS creation as Contributor to our repository. You can find ID using this command:
+
+```
+az aks show -n yourname-aks -g cp-aks --query servicePrincipalProfile.clientId -o tsv
+```
+
+Use GUI to go to your container repository, click Access Control (IAM) and add new assignment for role AcrPull and search for principal with ID you get with previous command.
+
+
 ## Kubernetes: basic theory
 As we wait for AKS to get created let's discuss how Kubernetes work and what are main objects we will use today. Follow instructor and you can download presentation [here](https://github.com/tkubica12/kubernetes-demo/blob/master/PPT-CZ/Kubernetes%20-%20jak%20funguje.pptx?raw=true)
 
 ## Kubernetes: Pods
 Kubernetes files are stored in kubernetes folder.
+
+First modify podApp.yaml image: to reflect your container repository and tag for Linux version of our application.
 
 Deploy Pod
 
@@ -253,7 +264,11 @@ kubectl get pods -w
 ```
 
 ## Kubernetes: Deployments
-Rather that using Pod directly let's create Deployment object. Controller than creates ReplicaSet and making sure that desired number of Pods is always running. There are few more configurations we have added as best practice that we are going to need later in lab:
+Rather that using Pod directly let's create Deployment object. Controller than creates ReplicaSet and making sure that desired number of Pods is always running. There are few more configurations we have added as best practice that we are going to need later in lab.
+
+First modify deploymentApp1replica.yaml image: to reflect your container repository and tag for Linux version of our application.
+
+Deploy.
 
 ```powershell
 kubectl apply -f deploymentApp1replica.yaml
@@ -267,7 +282,8 @@ kubectl delete pod todo-54bb8c6b7c-p9n6v    # replace with your Pod name
 kubectl get pods
 ```
 
-Scale our deployment to 3 replicas.
+Scale our deployment to 3 replicas. First modify deplymentApp3replicas.yaml image: to reflect your container repository and tag for Linux version of our application.
+
 
 ```powershell
 kubectl apply -f deploymentApp3replicas.yaml
@@ -355,7 +371,8 @@ $url = "$(kubectl get service todo-app -o jsonpath='{.status.loadBalancer.ingres
 while($true) {Invoke-RestMethod $url -DisableKeepAlive}
 ```
 
-Focus on version which is on end of string. No in different window deploy new version of Deploment with different image tag and see what is going on.
+Focus on version which is on end of string. No in different window deploy new version of Deploment with different image tag and see what is going on. First modify depoymenAppV2.yaml image: to reflect your container repository and tag for Linux version of our application.
+
 
 ```powershell
 kubectl apply -f deploymentAppV2.yaml

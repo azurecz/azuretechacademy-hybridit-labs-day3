@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: todo
-          image: cpacrbn7n3upudvjcq.azurecr.io/5-linux
+          image: cpacrbn7n3upudvjcq.azurecr.io/cpweb:5-linux
           ports:
             - containerPort: 80
           env:
