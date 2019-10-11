@@ -1,5 +1,5 @@
-appimage:
-  name: cpacrbn7n3upudvjcq.azurecr.io/cpweb
-  tag: 5-linux
+app:
+  imagename: cpacrbn7n3upudvjcq.azurecr.io/cpweb
+  replicas: 1
 
 aspnetenvironment: Development

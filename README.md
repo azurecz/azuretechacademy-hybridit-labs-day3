@@ -454,9 +454,11 @@ cd ..\app-helm
 $connectionString = "ConnectStringFromGui-setCredentials"
 $Bytes = [System.Text.Encoding]::UTF8.GetBytes($connectionString)
 $EncodedText =[Convert]::ToBase64String($Bytes)
-helm install -n todo `
+helm upgrade --install `
     -f values-dev.yaml `
-    --set "SQLConnectionString=$EncodedText" .
+    --set "app.imagetag=5-linux" `
+    --set "SQLConnectionString=$EncodedText" `
+    todo .
 ```
 
 Check our application is up and running.

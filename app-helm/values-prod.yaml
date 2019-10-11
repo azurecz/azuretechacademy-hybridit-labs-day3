@@ -1,0 +1,5 @@
+app:
+  imagename: cpacrbn7n3upudvjcq.azurecr.io/cpweb
+  replicas: 3
+
+aspnetenvironment: Production
