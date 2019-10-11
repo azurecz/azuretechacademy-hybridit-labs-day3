@@ -470,10 +470,57 @@ helm delete todo --purge
 ```
 
 ## Kubernetes: pushing application from Azure DevOps
-TODO: Namespaces
-TODO: Dev and Prod environments
-TODO: Push v1 to both environments
-TODO: Push v2 to Dev environment only
+We will now enable Continuous Deployment of Dev environment from Azure DevOps. Modify your CPWEBLINUX-DC pipeline.
+
+- Add it_academy_source repo as another artifact
+- Add task "Helm tool installer"
+- Add task "Package and deploy Helm charts" 
+  - rename to "App deploy"
+  - select your subscription, AKS resource group and your AKS cluster
+  - check Use cluster admin credentials
+  - specify Namespace default
+  - Command will be upgrade
+  - Chart Type is File Path
+  - for Chart Path point to app-helm folder
+  - Release Name will be todo
+  - In Set values add SQLConnectionString=base64encodedstring,app.imagetag=$(Release.ReleaseId)-linux (copy base64endodedstring from your PowerShell session from $EncodedText variable we created before)
+  - Point to value file values-dev.yaml
+  - Make sure Install if release not present is check and also Wait is checked
+
+Save and create Release. Check progress. We should see our application get installed to AKS. Get Service IP and check application is up and running.
+
+We will now practice creating additional stage for Prod. It should use different database, but for our demo we will use the same one to make it simple. 
+
+Kubernetes comes with concept of Namespaces to isolate management of different environments. Let's create production namespace:
+
+```powershell
+kubectl create namespace prod
+
+# When accessing non-default namespace use -n in your commands such as:
+kubectl get pods -n prod  # You should see no pods there
+```
+
+Let's now add PROD stage to our pipeline:
+
+- Click on Clone button to get copy of your DEV stage
+- Rename to PROD
+- Go to tasks and delete container build task (we already have image built from previous stage)
+- Modify app deployment:
+  - change Namespace to prod
+  - change Release Name to todo-prod
+  - point to different value file - values-prod.yaml
+- Go back to pipeline view and click on lighting symbol in PROD stage and enable Pre-deployment approvals and add yourself as approver
+
+Save and create new Release.
+
+Your DEV should get deployed and then pipeline stops. Check your DEV version is running fine. We are satisfied with this release so let's approve rolling it to production. Click on Approve. App will get deployed to prod namespace. Get external IP address (when it becomes available) and check app in production works.
+
+```powershell
+kubectl get service -n prod
+```
+
+Note: In practice it is risky to run dev and prod on the same AKS custer if you are not advanced in scheduling and protecting resources. Good practice is to use one AKS cluster for dev and test environments (two namespaces) and second AKS cluster for pre-prod (staging) and prod (again in two namespaces).
+
 
 ## Kubernetes: exposing apps with Ingress
 TODO: deploy Ingress controller and add DNS record
