@@ -112,12 +112,12 @@ Steps to create new release pipeline for Windows deployment
     - add Docker registry pointed to Azure Container Repository cpacr
     - container registry type cpweb
     - select dockerfile
-    - tags $(Release.DeploymentID)-windows
+    - tags $(Release.ReleaseId)-windows
 
 Repeat steps for Linux deployment with Release pipeline name CPWEBLINUX-CD
 
 1. Add new Agent job running Ubuntu and repeat same steps
-    - tags $(Release.DeploymentID)-linux
+    - tags $(Release.ReleaseId)-linux
 
 **Sample of definition for Docker build task**
 
