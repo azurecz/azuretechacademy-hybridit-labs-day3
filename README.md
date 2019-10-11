@@ -452,7 +452,7 @@ First delete all existing objects and deploy complete solution via Helm. Secrets
 kubectl delete deploy,pod,service,configmap,secret --all
 cd ..\app-helm
 $connectionString = "ConnectStringFromGui-setCredentials"
-$Bytes = [System.Text.Encoding]::Unicode.GetBytes($connectionString)
+$Bytes = [System.Text.Encoding]::UTF8.GetBytes($connectionString)
 $EncodedText =[Convert]::ToBase64String($Bytes)
 helm install -n todo `
     -f values-dev.yaml `
@@ -460,6 +460,12 @@ helm install -n todo `
 ```
 
 Check our application is up and running.
+
+Happy with that? Let's delete it now to clean up resources as we will start deploying from Azure DevOps.
+
+```powershell
+helm delete todo --purge
+```
 
 ## Kubernetes: pushing application from Azure DevOps
 TODO: Namespaces
