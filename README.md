@@ -604,13 +604,9 @@ kubectl get ingress
 
 Test access to todo app via Application Gateway IP that you found with previous kubectl command or in GUI of Application Gateway. Also walk throw Application Gatewat configuration to see how Ingress controller configured policies there.
 
-### Network Policy
+### Scaling with KEDA
 
-### AAD Pod identity and Key Vault
-
-### Advanced monitoring and alerting
-
-### Service mesh
+### Service Mesh Interface
 
 ## Contacts
 
