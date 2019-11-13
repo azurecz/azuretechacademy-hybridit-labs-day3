@@ -25,7 +25,7 @@ metadata:
   annotations:
     osiris.deislabs.io/enabled: "true"
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: serverless-http

@@ -638,9 +638,9 @@ Get public IP address of service.
 kubectl get service
 ```
 
-Wait for a while and you will see there are no serverless-http Pods running in your cluster. Open public IP in browser and watch Pod being created. Wait 30 seconds and Pod will get deleted.
+You will see there are no serverless-http Pods running in your cluster. Open public IP in browser and watch Pod being created and request completed. Wait 30 seconds and Pod will get deleted.
 
-It make sense to combine Osiris with KEDA and HPA to get complete serverless scaling capability for both HTTP and event-based mechanisms.
+It make sense to combine Osiris with HPA for scaling based on performance (1 to n scaling) and also with KEDA to get complete serverless scaling capability for both HTTP and event-based mechanisms.
 
 ### Service Mesh Interface
 
