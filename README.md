@@ -129,7 +129,7 @@ steps:
     containerRegistry: cpacr
     repository: cpweb
     Dockerfile: '$(System.DefaultWorkingDirectory)/_source/Dockerfile'
-    tags: '$(Release.DeploymentID)-windows'
+    tags: '$(Release.ReleaseId)-windows'
 ```
 
 ### Build Docker image with ACR Tasks (option)
