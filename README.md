@@ -609,6 +609,38 @@ Test access to todo app via Application Gateway IP that you found with previous 
 #### Using Azure Functions and KEDA for serverless workers
 
 #### Using Osiris for serverless HTTP scaling
+Standard scaling with Kubernetes Horizontal Pod Autoscaler is great for services that are always running and need to scale based on load. Nevertheless some services are access rarely and you might want to use serverless solution by scaling number of instances to 0 when there is no request and start Pod only when needed. This can be achieved with Osiris and combine with AKS cluster autoscaler can help you save costs.
+
+Use Helm to install development version of Osiris and for testing we will set pretty short timeout for services to scale to 0.
+
+```powershell
+helm repo add osiris https://osiris.azurecr.io/helm/v1/repo `
+  --username "eae9749a-fccf-4a24-ac0d-6506fe2a6ab3" `
+  --password "=s-e.2-84BhIo6LM6=/l4C_sFzxb=sT["
+
+helm repo update
+
+helm install osiris/osiris-edge `
+  --name osiris `
+  --namespace osiris-system `
+  --devel `
+  --set zeroscaler.metricsCheckInterval=30
+```
+
+Deploy Osiris enabled application.
+
+```powershell
+kubectl apply -f orisis.yaml
+```
+
+Get public IP address of service.
+```powershell
+kubectl get service
+```
+
+Wait for a while and you will see there are no serverless-http Pods running in your cluster. Open public IP in browser and watch Pod being created. Wait 30 seconds and Pod will get deleted.
+
+It make sense to combine Osiris with KEDA and HPA to get complete serverless scaling capability for both HTTP and event-based mechanisms.
 
 ### Service Mesh Interface
 
