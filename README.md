@@ -604,7 +604,11 @@ kubectl get ingress
 
 Test access to todo app via Application Gateway IP that you found with previous kubectl command or in GUI of Application Gateway. Also walk throw Application Gatewat configuration to see how Ingress controller configured policies there.
 
-### Scaling with KEDA
+### Serverless in Kubernetes
+
+#### Using Azure Functions and KEDA for serverless workers
+
+#### Using Osiris for serverless HTTP scaling
 
 ### Service Mesh Interface
 
