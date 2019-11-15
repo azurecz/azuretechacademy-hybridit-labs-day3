@@ -604,45 +604,119 @@ kubectl get ingress
 
 Test access to todo app via Application Gateway IP that you found with previous kubectl command or in GUI of Application Gateway. Also walk throw Application Gatewat configuration to see how Ingress controller configured policies there.
 
-### Serverless in Kubernetes
+### Serverless in Kubernetes with KEDA and Azure Functions
 
-#### Using Azure Functions and KEDA for serverless workers
+#### Installing KEDA and creating Azure Function
 
-#### Using Osiris for serverless HTTP scaling
-Standard scaling with Kubernetes Horizontal Pod Autoscaler is great for services that are always running and need to scale based on load. Nevertheless some services are access rarely and you might want to use serverless solution by scaling number of instances to 0 when there is no request and start Pod only when needed. This can be achieved with Osiris and combine with AKS cluster autoscaler can help you save costs.
-
-Use Helm to install development version of Osiris and for testing we will set pretty short timeout for services to scale to 0.
+Install Azure Functions local environment according to guide here: [https://github.com/azure/azure-functions-core-tools#installing](https://github.com/azure/azure-functions-core-tools#installing)
 
 ```powershell
-helm repo add osiris https://osiris.azurecr.io/helm/v1/repo `
-  --username "eae9749a-fccf-4a24-ac0d-6506fe2a6ab3" `
-  --password "=s-e.2-84BhIo6LM6=/l4C_sFzxb=sT["
+mkdir keda-test
+cd keda-test
 
-helm repo update
+func init . --docker --worker-runtime node --language javascript
 
-helm install osiris/osiris-edge `
-  --name osiris `
-  --namespace osiris-system `
-  --devel `
-  --set zeroscaler.metricsCheckInterval=30
+# Create new Azure Function and select Azure Queue Storage Trigger
+func new
 ```
 
-Deploy Osiris enabled application.
+Create storage account and queue
 
 ```powershell
-kubectl apply -f orisis.yaml
+$storageName = "myuniquekedastorage"
+az storage account create --sku Standard_LRS -g cp-aks -n $storageName
+$connectionString = az storage account show-connection-string --n $storageName --query connectionString -o tsv
+az storage queue create -n myqueue --connection-string $connectionString
+```
+
+Let's configure our local Azure Function environment. Open local.settings.json and put storage connection string as value for AzureWebJobsStorage. Then go to function floder (QueueTrigger was default) and modify function.json to have "AzureWebJobsStorage" as value for connection and myqueue as queu name.
+
+Modify host.json file to look like this:
+
+```json
+{
+    "version": "2.0",
+    "extensionBundle": {
+        "id": "Microsoft.Azure.Functions.ExtensionBundle",
+        "version": "[1.*, 2.0.0)"
+    }
+}
+```
+Let's test our Function locally. Start it, wait for build and then got to Storage Explorer (app or in portal) and create new message. Check that Function processing it.
+
+```powershell
+func start
+```
+
+You should see your Function is working locally.
+
+#### Deploying Azure Function to Kubernetes
+ Now let's install KEDA in AKS and push our Function there. Make sure you are authenticated to our Azure Container Registry.
+
+```powershell
+func kubernetes install --namespace keda
+
+cd keda-test/
+$registryName = "cpacrbn7n3upudvjcq"
+az acr login -n $registryName
+
+func kubernetes deploy --name keda-test `
+    --registry $registryName".azurecr.io" `
+    --max-replicas 10 `
+    --cooldown-period 30
+
+# If you prefer to build container manualy you can then use: func kubernetes deploy --name keda-test --image-name $registryName".azurecr.io"/func:v1
+```
+
+Watch Pods in defautl namespace and use portal or Storage Explorer to create message in queue. You will see Pod comming up, processing request and after defined period of time get deleted.
+
+```powershell
+kubectl get pods -w
+```
+
+#### Serverless HTTP scaling
+Standard scaling with Kubernetes Horizontal Pod Autoscaler is great for services that are always running and need to scale based on load. Nevertheless some services are access rarely and you might want to use serverless solution by scaling number of instances to 0 when there is no request and start Pod only when needed. This can be achieved with Osiris and combine with AKS cluster autoscaler can help you save costs.
+
+Func keda installer has also privisioned Osiris project for us in your AKS cluster. Let's create new Azure Function with HTTP Trigger.
+
+```powershell
+mkdir keda-webapi
+cd keda-webapi
+
+func init . --docker --worker-runtime node --language javascript
+
+# Create new Azure Function and select HTTP Trigger
+func new
+```
+
+We will keep default source code so let's just build container and deploy function to AKS.
+
+```powershell
+$registryName = "cpacrbn7n3upudvjcq"
+az acr login -n $registryName
+
+func kubernetes deploy --name keda-webapi `
+    --registry $registryName".azurecr.io" `
+    --max-replicas 10 `
+    --cooldown-period 30
 ```
 
 Get public IP address of service.
+
 ```powershell
 kubectl get service
 ```
 
-You will see there are no serverless-http Pods running in your cluster. Open public IP in browser and watch Pod being created and request completed. Wait 30 seconds and Pod will get deleted.
+Wait for some time (about 5 minutes) and you will see there are no serverless-http Pods running in your cluster.
 
-It make sense to combine Osiris with HPA for scaling based on performance (1 to n scaling) and also with KEDA to get complete serverless scaling capability for both HTTP and event-based mechanisms.
+```powershell
+kubectl get pods -w
+```
+
+Open public IP in browser and watch Pod being created and request completed. Wait 5 minutes (default) and Pod will get deleted.
 
 ### Service Mesh Interface
+TBD
 
 ## Contacts
 
