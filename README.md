@@ -12,7 +12,7 @@
 
 ## Prepare Azure services for application
 
-### Deploy Azure services manually
+### Deploy Azure Container service manually
 
 Check scripts in [arm-scripts](arm-scripts) and update parameter values.
 
@@ -32,6 +32,19 @@ az group deployment create -g $rgArtifacts `
     --parameters deploy-acr.parameters.json
 ```
 
+### Build Docker image with ACR Tasks
+
+You can run docker build remotely with [Azure Container Registry Tasks](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview)
+
+Run this script to build docker image for Windows and Linux
+
+```powershell
+az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Windows -t cpweb:0-windows --build-arg BASE_IMAGE=mcr.microsoft.com/dotnet/core/aspnet:2.1-nanoserver-1809 --no-wait
+az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Linux -t cpweb:0-linux --no-wait
+```
+
+### Deploy additional Azure services manually
+
 Run this script to deploy Azure Sql database
 
 ```powershell
@@ -43,7 +56,7 @@ az group deployment create -g $rgSql `
 ```
 
 Run this script to deploy Azure WebApp for Containers with Windows Containers with reference to Azure Container Registry and Azure Sql.
-Check parameters file for correct ACR name and Sql name/password.
+Check parameters file for correct ACR name and Sql name/password. WebApp for Windows Containers must reference existing ACR container, please check parameters file.
 
 ```powershell
 $rgWebWin="cp-web-win"+$uniqueId
@@ -130,17 +143,6 @@ steps:
     repository: cpweb
     Dockerfile: '$(System.DefaultWorkingDirectory)/_source/Dockerfile'
     tags: '$(Release.ReleaseId)-windows'
-```
-
-### Build Docker image with ACR Tasks (option)
-
-You can run docker build remotely with [Azure Container Registry Tasks](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview)
-
-Run this script to build docker image for Windows and Linux
-
-```powershell
-az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Windows -t cpweb:0-windows --build-arg BASE_IMAGE=mcr.microsoft.com/dotnet/core/aspnet:2.1-nanoserver-1809 --no-wait
-az acr build -r cpacr https://github.com/tkubica12/dotnetcore-sqldb-tutorial.git -f Dockerfile --platform Linux -t cpweb:0-linux --no-wait
 ```
 
 ## Using containers with Azure Container Instances (optional)

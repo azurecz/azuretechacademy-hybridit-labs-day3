@@ -17,6 +17,9 @@
         "acrRegistryResourceGroup": {
             "value": "cp-deployment-artifacts"
         },
+        "acrDefaultImage": {
+            "value": "cpweb:0-windows"
+        },
         "sqlServerName": {
             "value": "cpsqlserversssroc7vwfvwueh2"
         },
