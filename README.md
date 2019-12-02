@@ -529,7 +529,18 @@ kubectl get service -n prod
 Note: In practice it is risky to run dev and prod on the same AKS custer if you are not advanced in scheduling and protecting resources. Good practice is to use one AKS cluster for dev and test environments (two namespaces) and second AKS cluster for pre-prod (staging) and prod (again in two namespaces).
 
 ## Advanced Kubernetes (optional section for attendies using Kubernetes already)
-Continue to [Advanced Kubernetes](./advancedKubernetes.md)
+
+### Azure Application Gateway as Ingress
+Follow [Ingress guide](./ingress.md)
+
+### Serverless in Kubernetes with KEDA and Azure Functions
+Follow [KEDA guide](./keda.md)
+
+### Distributed Application Runtime
+Follow [DAPR guide](./dapr.md)
+
+### Service Mesh
+Follow [Istio guide](./istio.md)
 
 ## Contacts
 
