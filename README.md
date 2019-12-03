@@ -1,4 +1,26 @@
 # Azure Technical Academy - Hybrid IT Day 3: containers
+- [Azure Technical Academy - Hybrid IT Day 3: containers](#azure-technical-academy---hybrid-it-day-3-containers)
+  - [Prerequisities](#prerequisities)
+  - [Prepare Azure services for application](#prepare-azure-services-for-application)
+    - [Deploy Azure Container service manually](#deploy-azure-container-service-manually)
+    - [Build Docker image with ACR Tasks](#build-docker-image-with-acr-tasks)
+    - [Deploy additional Azure services manually](#deploy-additional-azure-services-manually)
+    - [Deploy Azure services with Azure DevOps](#deploy-azure-services-with-azure-devops)
+  - [Building and storing container images with Azure Container Registry](#building-and-storing-container-images-with-azure-container-registry)
+    - [Build docker image with Azure DevOps](#build-docker-image-with-azure-devops)
+  - [Using containers with Azure Container Instances (optional)](#using-containers-with-azure-container-instances-optional)
+  - [Using containers with Azure Web Apps for Containers](#using-containers-with-azure-web-apps-for-containers)
+    - [Windows docker images running on WebApps with DevOps](#windows-docker-images-running-on-webapps-with-devops)
+    - [Test application changes and automated deployment](#test-application-changes-and-automated-deployment)
+  - [Kubernetes](#kubernetes)
+  - [Advanced Kubernetes (optional section for attendies using Kubernetes already)](#advanced-kubernetes-optional-section-for-attendies-using-kubernetes-already)
+    - [Azure Application Gateway as Ingress](#azure-application-gateway-as-ingress)
+    - [Serverless in Kubernetes with KEDA and Azure Functions](#serverless-in-kubernetes-with-keda-and-azure-functions)
+    - [Distributed Application Runtime](#distributed-application-runtime)
+    - [Service Mesh](#service-mesh)
+  - [Contacts](#contacts)
+    - [Tomas Kubica - Cloud Solutions Architect](#tomas-kubica---cloud-solutions-architect)
+    - [Jaroslav Jindrich - Cloud Solutions Architect](#jaroslav-jindrich---cloud-solutions-architect)
 
 ## Prerequisities
 - All day1 and day2 labs completed and knowledge of all topics covered

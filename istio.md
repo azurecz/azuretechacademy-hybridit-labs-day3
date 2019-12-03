@@ -7,8 +7,6 @@
   - [Managing access to services outside Istio with ServiceEntry](#managing-access-to-services-outside-istio-with-serviceentry)
   - [Managing access to services in Istio from outside with Gateway](#managing-access-to-services-in-istio-from-outside-with-gateway)
   - [Load-balancing algorithms](#load-balancing-algorithms)
-  - [Circuit Breaker to protect from overloading](#circuit-breaker-to-protect-from-overloading)
-    - [Service authentication and encryption](#service-authentication-and-encryption)
 - [Clean up](#clean-up)
 
 # Install Istio

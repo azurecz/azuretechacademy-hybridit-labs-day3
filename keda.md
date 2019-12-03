@@ -1,3 +1,8 @@
+- [Serverless in Kubernetes with KEDA and Azure Functions](#serverless-in-kubernetes-with-keda-and-azure-functions)
+  - [Installing KEDA and creating Azure Function](#installing-keda-and-creating-azure-function)
+  - [Deploying Azure Function to Kubernetes](#deploying-azure-function-to-kubernetes)
+  - [Serverless HTTP scaling](#serverless-http-scaling)
+
 # Serverless in Kubernetes with KEDA and Azure Functions
 
 ## Installing KEDA and creating Azure Function
